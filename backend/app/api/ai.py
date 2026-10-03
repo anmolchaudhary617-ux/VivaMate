@@ -4,7 +4,7 @@ import re
 from typing import List, Literal
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field, ValidationError
-from app.services.ai.ollama import ollama_service
+from app.services.ai.factory import get_ai_service
 
 logger = logging.getLogger(__name__)
 
@@ -50,13 +50,14 @@ class VivaEvaluateResponse(BaseModel):
 
 @router.post("/test", response_model=AITestResponse)
 async def test_ai_connection(request: AITestRequest):
-    """Test connection to local Ollama server and AI generation."""
-    response_text = await ollama_service.generate_response(request.prompt)
+    """Test connection to local or remote AI server and generation."""
+    ai_service = get_ai_service()
+    response_text = await ai_service.generate_response(request.prompt)
     return AITestResponse(response=response_text)
 
 @router.post("/questions", response_model=VivaQuestionResponse)
 async def generate_viva_questions(request: VivaQuestionRequest):
-    """Generate structured viva questions for university Computer Engineering students using Ollama AI."""
+    """Generate structured viva questions for university Computer Engineering students using AI service."""
     prompt = f"""You are a Computer Science and Engineering university professor conducting an oral viva exam for an undergraduate Computer Engineering student.
 Generate exactly {request.num_questions} conceptual viva questions on the topic "{request.topic}".
 Target difficulty level: {request.difficulty}.
@@ -78,7 +79,8 @@ Output JSON format strictly matching this schema:
 }}
 """
 
-    raw_response = await ollama_service.generate_response(prompt, format="json")
+    ai_service = get_ai_service()
+    raw_response = await ai_service.generate_response(prompt, format="json")
     cleaned_text = clean_json_response(raw_response)
 
     try:
@@ -127,7 +129,8 @@ Evaluation Instructions:
 }}
 """
 
-    raw_response = await ollama_service.generate_response(prompt, format="json")
+    ai_service = get_ai_service()
+    raw_response = await ai_service.generate_response(prompt, format="json")
     cleaned_text = clean_json_response(raw_response)
 
     try:
@@ -160,7 +163,7 @@ class VivaQuestionFromMaterialRequest(BaseModel):
 
 @router.post("/questions/from-material", response_model=VivaQuestionResponse)
 async def generate_viva_questions_from_material(request: VivaQuestionFromMaterialRequest):
-    """Generate structured viva questions based primarily on uploaded study material text using Ollama AI."""
+    """Generate structured viva questions based primarily on uploaded study material text using AI service."""
     material_text = request.material
     if len(material_text) > MAX_MATERIAL_CHARS:
         logger.info(f"Truncating study material from {len(material_text)} to {MAX_MATERIAL_CHARS} characters for LLM context window.")
@@ -192,7 +195,8 @@ Generation Instructions:
 }}
 """
 
-    raw_response = await ollama_service.generate_response(prompt, format="json")
+    ai_service = get_ai_service()
+    raw_response = await ai_service.generate_response(prompt, format="json")
     cleaned_text = clean_json_response(raw_response)
 
     try:

@@ -1,3 +1,9 @@
+import sys
+import os
+
+# Ensure app package is importable in serverless Vercel environment
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings

@@ -1,6 +1,6 @@
 # VivaMate — AI-Powered Personalized Viva Practice
 
-> **Master your oral vivas with privacy-first local open-weight AI.**  
+> **Master your oral vivas with open-weight AI.**  
 > Built for the *"Build for a Friend"* Hacktoberfest 2026 Challenge.
 
 ---
@@ -8,18 +8,22 @@
 ## 1. Overview
 **VivaMate** is an interactive, student-focused mock viva practice platform. It helps engineering and computer science students prepare for technical oral examinations by generating structured viva questions, conducting one-question-at-a-time mock exams, providing real-time AI answer evaluations, and delivering a comprehensive performance dashboard.
 
+VivaMate supports two operational modes:
+- 💻 **Local Mode**: Uses **Ollama + Qwen3 4B** running on your local machine for on-device inference.
+- 🚀 **Production Mode**: Hosted FastAPI on **Render** using **Hugging Face Inference Providers** with open-weight Qwen3 models (`AI_PROVIDER=huggingface`).
+
 ---
 
 ## 2. Problem
 Oral viva examinations test conceptual depth, real-time articulation, and technical clarity under pressure. However, students face major preparation hurdles:
 - **Lack of Practice Partners**: Studying alone makes it hard to simulate interactive viva questioning.
 - **Generic Flashcards**: Traditional static quizzes don't evaluate open-ended explanations or offer constructive feedback.
-- **Privacy & Cost Concerns**: Online cloud AI tools risk leaking proprietary course notes and incur recurring subscription or API token costs.
+- **Cost & Proprietary Locking**: Proprietary AI services often require subscriptions or API tokens.
 
 ---
 
 ## 3. Solution
-VivaMate solves these challenges by combining a modern, reactive web UI with a lightweight local backend powered by an open-weight AI model (**Qwen3 4B via Ollama**). Students can upload their course materials (PDF or TXT) or specify custom topics to generate targeted, university-level viva questions, receive instant scoring with detailed feedback, and review performance without sending any data to third-party cloud APIs.
+VivaMate solves these challenges by combining a modern, reactive web UI with a lightweight backend powered by open-weight AI models. Students can upload their course materials (PDF or TXT) or specify custom topics to generate targeted, university-level viva questions, receive instant scoring with detailed feedback, and review performance seamlessly.
 
 ---
 
@@ -44,17 +48,19 @@ VivaMate solves these challenges by combining a modern, reactive web UI with a l
 
 ## 5. How It Works
 1. **Upload & Ingest**: Upload course notes or choose a computer science topic.
-2. **Generate**: Qwen3 4B creates structured viva questions formatted specifically for university engineering students.
+2. **Generate**: Open-weight AI creates structured viva questions formatted specifically for university engineering students.
 3. **Practice**: Answer questions sequentially in the interactive mock viva view.
 4. **Evaluate & Review**: Receive immediate AI evaluation for each response, followed by an end-of-session performance report.
 
 ---
 
-## 6. Architecture
+## 6. Architecture & Operational Modes
+
+### Architecture Diagram
 
 ```mermaid
 flowchart TD
-    subgraph Frontend [Vite + React]
+    subgraph Frontend [React + Vite Frontend - Vercel]
         UI[User Interface]
         DocUp[Document Uploader]
         GenComp[Viva Question Generator]
@@ -62,15 +68,20 @@ flowchart TD
         Report[Viva Performance Dashboard]
     end
 
-    subgraph Backend [FastAPI Service]
-        API[FastAPI Router]
+    subgraph Backend [FastAPI Backend Service - Render]
+        API[FastAPI Router /api/*]
         DocService[PDF/TXT Extractor - pypdf]
-        AIService[AI Service Layer]
+        Factory[AI Provider Factory get_ai_service]
     end
 
-    subgraph LocalAI [Ollama Engine]
-        Ollama[Ollama Server http://127.0.0.1:11434]
-        Model[Qwen3 4B Open-Weight Model]
+    subgraph LocalMode [Local Mode: AI_PROVIDER=ollama]
+        Ollama[Ollama REST API http://127.0.0.1:11434]
+        QwenLocal[Qwen3 4B Local Model]
+    end
+
+    subgraph ProdMode [Production Mode: AI_PROVIDER=huggingface]
+        HFRouter[Hugging Face Inference Router]
+        HFModel[Open-Weight Qwen3 Model]
     end
 
     UI --> DocUp
@@ -80,30 +91,39 @@ flowchart TD
     MockViva -->|POST /api/ai/evaluate| API
     
     API --> DocService
-    API --> AIService
-    AIService -->|HTTP POST /api/generate| Ollama
-    Ollama --> Model
-    Report <---|Session State Data| MockViva
+    API --> Factory
+    
+    Factory -->|Local Provider| Ollama
+    Ollama --> QwenLocal
+    
+    Factory -->|Production Provider| HFRouter
+    HFRouter --> HFModel
+
+    Report <---|Session State| MockViva
 ```
 
 ---
 
-## 7. Open-Source AI / Privacy
-VivaMate is designed around a **privacy-first, open-weight AI architecture**:
+## 7. Open-Source AI & Privacy Disclosures
 
-$$\text{React Frontend} \longrightarrow \text{FastAPI Backend} \longrightarrow \text{Ollama} \longrightarrow \text{Qwen3 4B}$$
+- **Local Mode (`AI_PROVIDER=ollama`)**:
+  - Runs **100% on-device** via local Ollama.
+  - Course materials, uploaded notes, and student answers remain strictly on your local machine.
+  - Zero token costs or cloud dependencies.
 
-- **100% Local Inference**: All AI generation and evaluation runs locally on your machine via Ollama.
-- **Privacy-Oriented**: Course materials, uploaded notes, and student answers remain strictly on local memory and are never transmitted to external cloud APIs.
-- **No Token/API Fees**: Operating costs are zero—no API keys or subscriptions required.
-- **Swappable Models**: The modular `OllamaService` abstraction allows replacing `qwen3:4b` with any other compatible local model (e.g., `llama3`, `mistral`, `gemma`) via environment configuration.
+- **Production Mode (`AI_PROVIDER=huggingface`)**:
+  - Deployed on **Render** (FastAPI backend) and **Vercel** (React frontend).
+  - Connects asynchronously to Hugging Face Inference Providers using `HF_TOKEN` and `HF_MODEL`.
+  - In production mode, study material text is processed via Hugging Face's open-weight inference router endpoints.
 
 ---
 
 ## 8. Tech Stack
 - **Frontend**: React 19, Vite, Vanilla CSS (Design Tokens & Glassmorphism), Lucide React
 - **Backend**: Python 3.10+, FastAPI, Pydantic v2, HTTPX, PyPDF, Python-Multipart, Uvicorn
-- **AI Engine**: Ollama, Qwen3 4B (`qwen3:4b`)
+- **AI Providers**: 
+  - Local: Ollama (`qwen3:4b`)
+  - Production: Hugging Face Inference Providers (`Qwen/Qwen3-4B-Instruct-2507`)
 
 ---
 
@@ -117,16 +137,21 @@ Hacktober_Challenge/
 │   │   │   ├── documents.py      # PDF/TXT extraction endpoints
 │   │   │   └── health.py         # Health check endpoint
 │   │   ├── core/
-│   │   │   └── config.py         # App & Ollama settings
+│   │   │   └── config.py         # App & AI settings
 │   │   ├── schemas/
 │   │   │   ├── ai.py             # Pydantic request/response schemas
 │   │   │   └── document.py       # Document upload schemas
 │   │   ├── services/
-│   │   │   ├── ai/               # Ollama AI service layer
+│   │   │   ├── ai/               # AI provider abstraction
+│   │   │   │   ├── base.py       # Abstract BaseAIService
+│   │   │   │   ├── ollama.py     # Ollama local provider
+│   │   │   │   ├── huggingface.py# Hugging Face inference provider
+│   │   │   │   ├── remote.py     # HTTP open-weight remote provider
+│   │   │   │   └── factory.py    # Environment provider resolver
 │   │   │   └── document.py       # PyPDF text extractor
 │   │   └── main.py               # FastAPI application entry point
 │   ├── requirements.txt          # Python dependencies
-│   └── venv/                     # Python virtual environment
+│   └── .env.example              # Backend environment template
 ├── frontend/
 │   ├── src/
 │   │   ├── components/
@@ -139,21 +164,38 @@ Hacktober_Challenge/
 │   │   └── index.css                     # Design system & styles
 │   ├── package.json                      # Frontend dependencies
 │   └── vite.config.js                    # Vite server configuration
+├── render.yaml                           # Render backend deployment config
+├── vercel.json                           # Vercel deployment config
 ├── .gitignore
+├── LICENSE
 └── README.md
 ```
 
 ---
 
-## 10. Requirements
-- **Node.js**: `v18.0.0` or higher
-- **Python**: `3.10` or higher
-- **Ollama**: Installed and running locally
-- **Ollama Model**: `qwen3:4b`
+## 10. Environment Variables
+
+### Backend (`backend/.env`)
+
+| Variable | Description | Default (Local) | Production (Render) Example |
+| :--- | :--- | :--- | :--- |
+| `AI_PROVIDER` | Selection: `"ollama"` or `"huggingface"` | `ollama` | `huggingface` |
+| `OLLAMA_BASE_URL` | Local Ollama REST URL | `http://127.0.0.1:11434` | — |
+| `OLLAMA_MODEL` | Local Ollama model tag | `qwen3:4b` | — |
+| `HF_BASE_URL` | Hugging Face Inference Router URL | — | `https://router.huggingface.co/v1` |
+| `HF_TOKEN` | Hugging Face User Access Token | — | `hf_...` |
+| `HF_MODEL` | Open-weight model name | — | `Qwen/Qwen3-4B-Instruct-2507` |
+| `CORS_ORIGINS` | Allowed CORS origins | `http://localhost:5173,http://127.0.0.1:5173` | `https://vivamate.vercel.app` |
+
+### Frontend (`frontend/.env`)
+
+| Variable | Description | Default | Production Example |
+| :--- | :--- | :--- | :--- |
+| `VITE_API_BASE_URL` | Base URL of FastAPI backend service | `http://localhost:8000` | `https://vivamate-backend.onrender.com` |
 
 ---
 
-## 11. Local Setup
+## 11. Local Setup Guide
 
 ### Step 1: Install & Launch Ollama
 1. Download and install [Ollama](https://ollama.ai/).
@@ -206,12 +248,34 @@ Hacktober_Challenge/
 
 ---
 
-## 12. API Overview
+## 12. Deployment Guide
+
+### Backend Deployment (Render)
+1. Create a new **Web Service** on [Render](https://render.com/).
+2. Connect your GitHub repository and set **Root Directory** to `backend`.
+3. Set **Build Command**: `pip install -r requirements.txt`
+4. Set **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+5. Configure Environment Variables in Render Dashboard:
+   - `AI_PROVIDER`: `huggingface`
+   - `HF_TOKEN`: `<your_hugging_face_user_access_token>`
+   - `HF_MODEL`: `Qwen/Qwen3-4B-Instruct-2507`
+   - `CORS_ORIGINS`: `https://your-frontend-app.vercel.app`
+
+### Frontend Deployment (Vercel)
+1. Import the project into **Vercel**.
+2. Set **Root Directory** to `frontend`.
+3. Configure Environment Variables in Vercel Dashboard:
+   - `VITE_API_BASE_URL`: `https://vivamate-backend.onrender.com`
+4. Deploy!
+
+---
+
+## 13. API Overview
 
 | Endpoint | Method | Description |
 | :--- | :---: | :--- |
 | `/api/health` | `GET` | Returns backend connection status and service health. |
-| `/api/ai/test` | `POST` | Validates connectivity between FastAPI and the local Ollama instance. |
+| `/api/ai/test` | `POST` | Validates connectivity between FastAPI and the active AI provider. |
 | `/api/ai/questions` | `POST` | Generates topic-based viva questions with specified count and difficulty. |
 | `/api/ai/questions/from-material` | `POST` | Generates viva questions directly derived from uploaded study material text. |
 | `/api/ai/evaluate` | `POST` | Evaluates a student's answer, returning score, correctness, feedback, ideal answer, and follow-up. |
@@ -219,22 +283,10 @@ Hacktober_Challenge/
 
 ---
 
-## 13. Example Workflow
-1. Start local Ollama, FastAPI, and Vite dev server.
-2. In the browser (`http://localhost:5173`), confirm **Backend Connected** status.
-3. Upload a lecture PDF (e.g., `Computer_Networks_Ch3.pdf`).
-4. Select **5 Questions** and **Mixed** difficulty, then click **Generate Viva Questions**.
-5. Click **Start Viva Session**.
-6. Answer each question in the text area and click **Submit Answer**.
-7. Review immediate AI feedback, score, and ideal answer, then click **Next Question**.
-8. View the **Final Viva Performance Dashboard** summarizing your total score, percentage, strengths, weaknesses, and detailed review.
-
----
-
 ## 14. MVP Limitations
 - **File Formats**: Supports PDF (`.pdf`) and Plain Text (`.txt`) files only.
 - **In-Memory Processing**: Uploaded study materials are held in transient memory per request; no permanent server storage or database is attached.
-- **Context Limits**: Large PDF files are truncated to an initial character limit suitable for local LLM prompt windows.
+- **Context Limits**: Large PDF files are truncated to an initial character limit suitable for LLM prompt windows.
 - **Stateless Sessions**: Session history is stored purely in React state and resets upon browser reload.
 - **Text-Only Input**: Voice input and speech synthesis are not yet integrated.
 
@@ -249,4 +301,4 @@ Hacktober_Challenge/
 ---
 
 ## 16. License
-This project is intended to be licensed under the [MIT License](LICENSE).
+This project is licensed under the [MIT License](LICENSE).
