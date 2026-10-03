@@ -30,7 +30,7 @@ VivaMate supports two operational modes:
 
 Production architecture:
 
-```markdown
+
 ```mermaid
 flowchart TD
     A[User] --> B[Vercel]
@@ -41,7 +41,6 @@ flowchart TD
     F --> G[Hugging Face Inference Providers]
     G --> H[Qwen3 4B]
 
----
 ```
 
 ## 2. Problem
