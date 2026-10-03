@@ -118,15 +118,22 @@ Evaluation Instructions:
 4. Provide concise, constructive feedback explaining what the student got right and what key concepts were missing or inaccurate.
 5. Provide a concise ideal viva answer appropriate for an undergraduate university exam.
 6. Formulate one relevant, insightful follow-up viva question based on the topic.
-7. Output NO chain-of-thought or reasoning text. Return ONLY a valid JSON object matching this exact schema:
-
+7. Output NO chain-of-thought or reasoning text. Return ONLY a valid JSON object matching this schema:
 {{
-  "score": 8,
-  "correctness": "Mostly Correct",
-  "feedback": "You correctly identified acknowledgements and retransmission, but you did not explain sequence numbers.",
-  "ideal_answer": "TCP provides reliable delivery using sequence numbers, acknowledgements, and retransmissions.",
-  "follow_up_question": "How does TCP detect that a segment has been lost?"
+  "score": <integer from 0 to 10>,
+  "correctness": "<Incorrect | Partially Correct | Mostly Correct | Correct>",
+  "feedback": "<concise feedback about the student's actual answer>",
+  "ideal_answer": "<concise ideal answer to the actual question>",
+  "follow_up_question": "<relevant follow-up question about the actual question/topic>"
 }}
+
+IMPORTANT:
+- Evaluate ONLY the current Question Asked and Student's Answer provided above.
+- Every field must be specific to the current question and current student answer.
+- Do NOT copy, reuse, or imitate evaluation content from this prompt.
+- Do NOT assume the question is about TCP unless the current question actually concerns TCP.
+- The ideal answer must directly answer the current question.
+- The follow-up question must be relevant to the current question and topic.
 """
 
     ai_service = get_ai_service()
