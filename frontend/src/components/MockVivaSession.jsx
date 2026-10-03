@@ -12,6 +12,7 @@ import {
   HelpCircle,
   Lightbulb
 } from 'lucide-react';
+import VivaPerformanceReport from './VivaPerformanceReport';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
@@ -123,95 +124,26 @@ export default function MockVivaSession({ questions, topic, onStartNewViva }) {
     }
   };
 
-  // Completion Screen
+  const handlePracticeAgain = () => {
+    setCurrentIndex(0);
+    setCurrentAnswer('');
+    setIsSubmitted(false);
+    setCurrentEvaluation(null);
+    setValidationError(null);
+    setEvaluationError(null);
+    setIsComplete(false);
+  };
+
+  // Completion Screen (Phase 6 Final Viva Performance Report)
   if (isComplete) {
     return (
-      <div className="glass-card viva-complete-card">
-        <div className="complete-header">
-          <div className="complete-icon-wrapper">
-            <Award size={36} color="var(--primary-light)" />
-          </div>
-          <h2 className="complete-title">Viva Practice Complete!</h2>
-          <p className="complete-subtitle">
-            Great job! You completed all <strong className="gradient-text">{questions.length}</strong> viva evaluations on <strong className="gradient-text">{topic}</strong>.
-          </p>
-        </div>
-
-        <div className="complete-stats-row">
-          <div className="stat-pill">
-            <span className="stat-label">Questions Evaluated</span>
-            <span className="stat-val">{submittedAnswers.length} / {questions.length}</span>
-          </div>
-          <div className="stat-pill">
-            <span className="stat-label">Topic</span>
-            <span className="stat-val">{topic}</span>
-          </div>
-          <div className="stat-pill">
-            <span className="stat-label">AI Engine</span>
-            <span className="stat-val">Qwen3 4B</span>
-          </div>
-        </div>
-
-        {/* Answer Summary & AI Evaluation List */}
-        <div className="submitted-answers-list">
-          <h3 className="summary-list-title">Detailed Evaluation Summary</h3>
-          {submittedAnswers.map((item, idx) => (
-            <div key={idx} className="glass-card submitted-item-card">
-              <div className="submitted-item-header">
-                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                  <span className="q-num-pill">Question #{idx + 1}</span>
-                  <span className={getDifficultyBadgeClass(item.difficulty)}>
-                    {item.difficulty}
-                  </span>
-                </div>
-
-                {item.evaluation && (
-                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                    <span className={getCorrectnessBadgeClass(item.evaluation.correctness)}>
-                      {item.evaluation.correctness}
-                    </span>
-                    <span className="eval-score-pill">
-                      {item.evaluation.score}/10
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              <p className="submitted-question-text">{item.question}</p>
-
-              <div className="user-answer-box">
-                <span className="user-answer-label">Your Response:</span>
-                <p className="user-answer-text">{item.answer}</p>
-              </div>
-
-              {item.evaluation && (
-                <div className="eval-summary-subcard">
-                  <div className="eval-subrow">
-                    <MessageSquare size={14} className="eval-icon-blue" />
-                    <span><strong>Feedback:</strong> {item.evaluation.feedback}</span>
-                  </div>
-                  <div className="eval-subrow">
-                    <Lightbulb size={14} className="eval-icon-green" />
-                    <span><strong>Ideal Answer:</strong> {item.evaluation.ideal_answer}</span>
-                  </div>
-                  {item.evaluation.follow_up_question && (
-                    <div className="eval-subrow">
-                      <HelpCircle size={14} className="eval-icon-purple" />
-                      <span><strong>Follow-Up Question:</strong> {item.evaluation.follow_up_question}</span>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-
-        <div className="complete-actions">
-          <button className="btn btn-primary" onClick={onStartNewViva}>
-            <RotateCcw size={18} /> Start New Viva Session
-          </button>
-        </div>
-      </div>
+      <VivaPerformanceReport 
+        submittedAnswers={submittedAnswers}
+        totalQuestions={questions.length}
+        topic={topic}
+        onPracticeAgain={handlePracticeAgain}
+        onStartNewViva={onStartNewViva}
+      />
     );
   }
 
