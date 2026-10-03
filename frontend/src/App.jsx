@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  GraduationCap, 
-  Activity, 
-  RefreshCw, 
-  FileText, 
-  Sliders, 
-  Bot, 
-  BarChart3, 
-  ShieldCheck, 
-  Cpu, 
-  CheckCircle2, 
+import {
+  GraduationCap,
+  Activity,
+  RefreshCw,
+  FileText,
+  Sliders,
+  Bot,
+  BarChart3,
+  ShieldCheck,
+  Cpu,
+  CheckCircle2,
   AlertCircle,
   Sparkles
 } from 'lucide-react';
@@ -68,7 +68,7 @@ export default function App() {
             </div>
             <span>Viva<span className="gradient-text">Mate</span></span>
           </a>
-          
+
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
             <span className="badge badge-hacktober">
               <Sparkles size={12} /> Hacktoberfest 2026
@@ -85,14 +85,14 @@ export default function App() {
         <div className="hero-tag">
           <Sparkles size={16} /> Built for the "Build for a Friend" Hacktober Challenge
         </div>
-        
+
         <h1 className="hero-title">
           Master Your Oral Vivas with <br />
           <span className="gradient-text">Local Open-Weight AI</span>
         </h1>
-        
+
         <p className="hero-subtitle">
-          VivaMate is an intelligent mock viva practice platform designed specifically for students. 
+          VivaMate is an intelligent mock viva practice platform designed specifically for students.
           Upload your notes, choose your topic, and practice with real-time AI viva questions and evaluation.
         </p>
 
@@ -103,12 +103,11 @@ export default function App() {
               <Activity size={20} color="var(--primary-light)" />
               <span>Backend Connection Status</span>
             </div>
-            
+
             <div className={`status-pill ${healthState.status}`}>
-              <div className={`pulse-dot ${
-                healthState.status === 'online' ? 'green' : 
-                healthState.status === 'offline' ? 'red' : 'amber'
-              }`} />
+              <div className={`pulse-dot ${healthState.status === 'online' ? 'green' :
+                  healthState.status === 'offline' ? 'red' : 'amber'
+                }`} />
               <span>
                 {healthState.status === 'online' && 'Backend Connected'}
                 {healthState.status === 'offline' && 'Backend Disconnected'}
@@ -122,7 +121,7 @@ export default function App() {
               <span className="detail-label">Target Endpoint</span>
               <span className="detail-value">{API_BASE_URL}/api/health</span>
             </div>
-            
+
             <div className="detail-item">
               <span className="detail-label">Service Name</span>
               <span className="detail-value">
@@ -156,8 +155,8 @@ export default function App() {
           )}
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.25rem' }}>
-            <button 
-              className="btn btn-secondary" 
+            <button
+              className="btn btn-secondary"
               onClick={checkHealth}
               disabled={healthState.status === 'checking'}
             >
@@ -188,7 +187,7 @@ export default function App() {
             <div className="feature-icon-wrapper">
               <FileText size={24} />
             </div>
-            <span className="feature-badge">Phase 2</span>
+            <span className="feature-badge">01</span>
             <h3 className="feature-title">Material Upload</h3>
             <p className="feature-desc">
               Upload course PDFs or raw text notes. VivaMate extracts key concepts and context automatically.
@@ -199,7 +198,7 @@ export default function App() {
             <div className="feature-icon-wrapper">
               <Sliders size={24} />
             </div>
-            <span className="feature-badge">Phase 3</span>
+            <span className="feature-badge">02</span>
             <h3 className="feature-title">Session Customization</h3>
             <p className="feature-desc">
               Configure subject focus, viva difficulty, question depth, and mock exam duration.
@@ -210,7 +209,7 @@ export default function App() {
             <div className="feature-icon-wrapper">
               <Bot size={24} />
             </div>
-            <span className="feature-badge">Phase 4</span>
+            <span className="feature-badge">03</span>
             <h3 className="feature-title">Interactive Mock Viva</h3>
             <p className="feature-desc">
               Experience one-on-one viva questioning, adaptive follow-ups, and real-time answer evaluation.
@@ -221,7 +220,7 @@ export default function App() {
             <div className="feature-icon-wrapper">
               <BarChart3 size={24} />
             </div>
-            <span className="feature-badge">Phase 5</span>
+            <span className="feature-badge">04</span>
             <h3 className="feature-title">Performance Report</h3>
             <p className="feature-desc">
               Receive detailed breakdown scores, strength/weakness analysis, and tailored improvement tips.
@@ -243,10 +242,10 @@ export default function App() {
             <p className="feature-desc" style={{ marginBottom: '1rem' }}>
               VivaMate leverages Ollama and open-weight LLMs locally on your machine.
             </p>
-            <ul style={{ 
-              listStyle: 'none', 
-              display: 'flex', 
-              flexDirection: 'column', 
+            <ul style={{
+              listStyle: 'none',
+              display: 'flex',
+              flexDirection: 'column',
               gap: '0.6rem',
               fontSize: '0.925rem',
               color: 'var(--text-muted)'
