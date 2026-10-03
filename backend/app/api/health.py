@@ -1,0 +1,12 @@
+from fastapi import APIRouter
+from app.core.config import settings
+
+router = APIRouter()
+
+@router.get("/health")
+def health_check():
+    """Health check endpoint to verify backend service status."""
+    return {
+        "status": "ok",
+        "service": settings.PROJECT_NAME
+    }
