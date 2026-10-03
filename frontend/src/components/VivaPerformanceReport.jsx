@@ -77,7 +77,7 @@ export default function VivaPerformanceReport({ submittedAnswers, totalQuestions
       {/* Report Header Card */}
       <div className="glass-card report-hero-card">
         <div className="report-hero-badge">
-          <Award size={14} /> Phase 6 Final Viva Performance Report
+          <Award size={14} /> Final Viva Performance Report
         </div>
         <h2 className="report-title">Viva Performance Dashboard</h2>
         <p className="report-subtitle">
