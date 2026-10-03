@@ -14,6 +14,41 @@ VivaMate supports two operational modes:
 
 ---
 
+## Live Demo
+
+🌐 **[Try VivaMate](https://viva-mate-seven.vercel.app/)**
+
+> The deployed version uses the same Qwen3 4B open-weight model through a production inference provider. For local development, VivaMate can run Qwen3 4B through Ollama.
+
+### Deployment
+
+- **Frontend:** Vercel
+- **Backend:** Render
+- **Production AI:** Hugging Face Inference Providers
+- **Model:** Qwen/Qwen3-4B-Instruct-2507
+- **Local AI:** Ollama + Qwen3 4B
+
+Production architecture:
+
+```text
+User
+  ↓
+Vercel
+  ↓
+React + Vite
+  ↓
+Render
+  ↓
+FastAPI
+  ↓
+AI Service Layer
+  ↓
+Hugging Face Inference Providers
+  ↓
+Qwen3 4B
+
+---
+
 ## 2. Problem
 Oral viva examinations test conceptual depth, real-time articulation, and technical clarity under pressure. However, students face major preparation hurdles:
 - **Lack of Practice Partners**: Studying alone makes it hard to simulate interactive viva questioning.
