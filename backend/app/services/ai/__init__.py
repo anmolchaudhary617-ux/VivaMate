@@ -1,1 +1,4 @@
-"""AI service layer placeholder for future open-weight model integration (e.g. Ollama)."""
+from app.services.ai.base import BaseAIService
+from app.services.ai.ollama import OllamaService, ollama_service
+
+__all__ = ["BaseAIService", "OllamaService", "ollama_service"]

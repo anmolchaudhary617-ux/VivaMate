@@ -13,10 +13,13 @@ import {
   AlertCircle,
   Sparkles
 } from 'lucide-react';
+import VivaQuestionGenerator from './components/VivaQuestionGenerator';
+import DocumentUploader from './components/DocumentUploader';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 export default function App() {
+  const [extractedDoc, setExtractedDoc] = useState(null);
   const [healthState, setHealthState] = useState({
     status: 'checking', // 'online' | 'offline' | 'checking'
     data: null,
@@ -164,6 +167,14 @@ export default function App() {
           </div>
         </div>
       </section>
+
+      {/* Document Uploader Component (Phase 5A) */}
+      <div style={{ maxWidth: '900px', margin: '0 auto 2rem', padding: '0 1.5rem' }}>
+        <DocumentUploader onDocumentExtracted={setExtractedDoc} />
+      </div>
+
+      {/* Main Feature Engine: Viva Question Generator */}
+      <VivaQuestionGenerator extractedDoc={extractedDoc} />
 
       {/* Planned Feature Architecture Grid */}
       <section className="features-section">

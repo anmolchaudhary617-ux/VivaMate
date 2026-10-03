@@ -17,5 +17,9 @@ class Settings:
         ).split(",")
         if origin.strip()
     ]
+    
+    # Ollama AI Configuration
+    OLLAMA_BASE_URL: str = os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434")
+    OLLAMA_MODEL: str = os.getenv("OLLAMA_MODEL", "qwen3:4b")
 
 settings = Settings()
