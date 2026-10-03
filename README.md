@@ -30,24 +30,19 @@ VivaMate supports two operational modes:
 
 Production architecture:
 
-```text
-User
-  ↓
-Vercel
-  ↓
-React + Vite
-  ↓
-Render
-  ↓
-FastAPI
-  ↓
-AI Service Layer
-  ↓
-Hugging Face Inference Providers
-  ↓
-Qwen3 4B
+```markdown
+```mermaid
+flowchart TD
+    A[User] --> B[Vercel]
+    B --> C[React + Vite]
+    C --> D[Render]
+    D --> E[FastAPI]
+    E --> F[AI Service Layer]
+    F --> G[Hugging Face Inference Providers]
+    G --> H[Qwen3 4B]
 
 ---
+```
 
 ## 2. Problem
 Oral viva examinations test conceptual depth, real-time articulation, and technical clarity under pressure. However, students face major preparation hurdles:
